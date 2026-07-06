@@ -1,3 +1,8 @@
+---
+name: domain-warmup-orchestrator
+description: Warm up secondary sending domains to full sending capacity with healthy inbox placement before real prospects receive email.
+---
+
 # Domain Warm-up Orchestrator
 
 ## Purpose
@@ -125,7 +130,7 @@ WARM-UP LAUNCH READINESS REPORT
 Generated: [date]
 Campaign target start: [date]
 
-INBOX: pascal@tryexample.eu
+INBOX: alex@tryexample.eu
 Warm-up duration: 6 weeks
 Current daily volume: 50
 Instantly warm-up score: 84 ✓
@@ -137,7 +142,7 @@ DMARC policy: quarantine ✓
 
 STATUS: GO ✓ — Ready for live outreach
 
-INBOX: pascal@getexample.eu
+INBOX: alex@getexample.eu
 [...]
 STATUS: NO-GO ✗ — Inbox placement 58%. Extend warm-up 1 week.
 

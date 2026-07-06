@@ -1,3 +1,8 @@
+---
+name: domain-infrastructure-setup
+description: Set up and configure secondary sending domains (SPF/DKIM/DMARC) for cold outreach so your primary domain's reputation is protected.
+---
+
 # Domain Infrastructure Setup
 
 ## Purpose
@@ -130,8 +135,8 @@ For each domain, create inboxes following this naming convention:
 **Pattern:** `[firstname]@[secondarydomain]`
 
 Examples:
-- pascal@tryexample.eu
-- pascal@getexample.eu
+- alex@tryexample.eu
+- alex@getexample.eu
 
 **Rules:**
 - Use real first names only — never info@, hello@, team@
@@ -173,7 +178,7 @@ RECOMMENDED SECONDARY DOMAINS
 
 DOMAIN & INBOX PLAN
 Domain 1: tryexample.eu
-  Inbox 1: pascal@tryexample.eu
+  Inbox 1: alex@tryexample.eu
   Inbox 2: [name]@tryexample.eu
   Inbox 3: [name]@tryexample.eu
 

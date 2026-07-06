@@ -16,6 +16,7 @@ plus two commands to stand up your sending infrastructure.
 ```
 git clone https://github.com/ryzo-revops/outbound-os
 cp -r outbound-os/skills/* ~/.claude/skills/
+cp -r outbound-os/commands/* ~/.claude/commands/
 ```
 
 ## The pipeline
