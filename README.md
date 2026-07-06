@@ -1,8 +1,14 @@
-# OutboundOS
+```
+  ___  _   _ _____ ____   ___  _   _ _   _ ____   ___  ____
+ / _ \| | | |_   _| __ ) / _ \| | | | \ | |  _ \ / _ \/ ___|
+| | | | | | | | | |  _ \| | | | | | |  \| | | | | | | \___ \
+| |_| | |_| | | | | |_) | |_| | |_| | |\  | |_| | |_| |___) |
+ \___/ \___/  |_| |____/ \___/ \___/|_| \_|____(_)___/|____/
+```
 
-The AI-native cold-outbound pipeline [Ryzo](https://ryzo.nl) runs on — open-sourced
-as a Claude Code plugin. Nine skills chain from raw company context to sent campaigns,
-plus two commands to stand up your sending infrastructure.
+> **The AI-native cold-outbound pipeline [Ryzo](https://ryzo.nl) runs on** — open-sourced as a Claude Code plugin.
+
+Nine skills chain from raw company context to sent campaigns, plus two commands to stand up your sending infrastructure.
 
 ## Install
 
