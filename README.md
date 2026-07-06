@@ -21,7 +21,7 @@ Nine skills chain from raw company context to sent campaigns, plus two commands 
 
 **As a plugin (recommended):**
 ```
-/plugin marketplace add vibehackerman/outbound-os
+/plugin marketplace add vibehackerman/ryzo
 /plugin install outbound-os@ryzo
 ```
 
