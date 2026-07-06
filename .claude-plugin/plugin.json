@@ -1,0 +1,10 @@
+{
+  "name": "outbound-os",
+  "version": "0.1.0",
+  "description": "The AI-native cold-outbound pipeline Ryzo runs on — 9 chained skills from company context to sent campaigns.",
+  "author": { "name": "Ryzo", "url": "https://ryzo.nl" },
+  "homepage": "https://github.com/ryzo-revops/outbound-os",
+  "repository": "https://github.com/ryzo-revops/outbound-os",
+  "license": "MIT",
+  "keywords": ["outbound", "cold-email", "gtm", "sales", "prospecting", "instantly", "revops"]
+}
