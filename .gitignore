@@ -4,3 +4,6 @@
 .env.*
 *.local
 node_modules/
+
+# SDD workflow scratch — never publish
+.superpowers/
