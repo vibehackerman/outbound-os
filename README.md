@@ -10,6 +10,11 @@
 
 > **The AI-native cold-outbound pipeline [Ryzo](https://ryzo.nl) runs on** — open-sourced as a Claude Code plugin.
 
+[![Claude Code Ready](https://img.shields.io/badge/Claude_Code-ready-5A45FF)](https://claude.com/claude-code)
+[![Skills](https://img.shields.io/badge/skills-9-E0621A)](#the-pipeline)
+[![Commands](https://img.shields.io/badge/commands-2-2A7DE1)](#the-pipeline)
+[![License: MIT](https://img.shields.io/badge/license-MIT-3DA639)](LICENSE)
+
 Nine skills chain from raw company context to sent campaigns, plus two commands to stand up your sending infrastructure.
 
 ## Install
@@ -26,6 +31,20 @@ git clone https://github.com/ryzo-revops/outbound-os
 cp -r outbound-os/skills/* ~/.claude/skills/
 cp -r outbound-os/commands/* ~/.claude/commands/
 ```
+
+## Quick start
+
+Once installed, drive it in plain language — each skill auto-triggers on the right ask and hands its output to the next. A full run reads like a conversation:
+
+1. *"Build company context for **my company**"* → **company-context-builder** interviews you and writes a reusable context file.
+2. *"Research the problems our ICP faces"* → **market-problems-deep-research** builds a pain/problem taxonomy.
+3. *"Build a target list of **&lt;segment&gt;**"* → **list-building** drafts a hypothesis-driven list.
+4. *"Enrich these prospects"* → **data-points-builder** then **table-enrichment** add per-prospect datapoints.
+5. *"Tier this list"* → **tiering-segmentation** scores and segments into outreach strategies.
+6. *"Write emails for tier 1"* → **email-generation** assembles personalized copy; **copy-feedback** stress-tests it against prospect psychology.
+7. *"Launch this in lemlist"* → **run-lemlist** builds the campaign, enrols the leads, and monitors deliverability.
+
+One-time setup before your first send: run the **domain-infrastructure-setup** and **domain-warmup-orchestrator** commands to stand up and warm secondary sending domains.
 
 ## The pipeline
 
@@ -51,6 +70,10 @@ before step 9.
 - Your own API keys, supplied via environment variables (e.g. `LEMLIST_API_KEY`).
   No keys ship in this repo; none are stored in any skill file.
 - Secondary sending domains (the two infrastructure commands help you set these up).
+
+## Why we open-sourced it
+
+This is the actual pipeline we run — not a demo. We publish it because good GTM playbooks compound in the open: markdown-native (no lock-in), version-controlled, and forkable. Take it, adapt it to your ICP, and ship better outbound. If it helps, [tell us](https://ryzo.nl).
 
 ## About
 
