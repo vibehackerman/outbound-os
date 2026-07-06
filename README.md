@@ -21,13 +21,13 @@ Nine skills chain from raw company context to sent campaigns, plus two commands 
 
 **As a plugin (recommended):**
 ```
-/plugin marketplace add ryzo-revops/outbound-os
+/plugin marketplace add vibehackerman/outbound-os
 /plugin install outbound-os@ryzo
 ```
 
 **As plain skills (copy-in):**
 ```
-git clone https://github.com/ryzo-revops/outbound-os
+git clone https://github.com/vibehackerman/outbound-os
 cp -r outbound-os/skills/* ~/.claude/skills/
 cp -r outbound-os/commands/* ~/.claude/commands/
 ```
