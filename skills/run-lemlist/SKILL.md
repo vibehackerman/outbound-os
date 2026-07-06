@@ -1,11 +1,11 @@
 ---
-name: run-instantly
-description: Configure, launch, and monitor outbound email campaigns in Instantly. Use this skill whenever the user mentions running a campaign, launching emails, setting up Instantly, configuring sequences, uploading to Instantly, campaign setup, sending cold emails, monitoring deliverability, checking campaign performance, adjusting send volume, pausing campaigns, or managing outbound execution. Also triggers on "launch this campaign", "upload to Instantly", "set up the sequence in Instantly", "configure sending for [segment]", "check campaign health", "monitor deliverability", "adjust send volume", or any request to move from generated emails to actual sending via Instantly.
+name: run-lemlist
+description: Configure, launch, and monitor outbound email campaigns in lemlist. Use this skill whenever the user mentions running a campaign, launching emails, setting up lemlist, configuring sequences, uploading to lemlist, campaign setup, sending cold emails, monitoring deliverability, checking campaign performance, adjusting send volume, pausing campaigns, or managing outbound execution. Also triggers on "launch this campaign", "upload to lemlist", "set up the sequence in lemlist", "launch leads in lemlist", "configure sending for [segment]", "check campaign health", "monitor deliverability", "adjust send volume", or any request to move from generated emails to actual sending via lemlist.
 ---
 
-# Run Instantly
+# Run lemlist
 
-The final execution step. Take generated emails and prospect data, configure Instantly campaigns, launch sequences, and monitor performance. This is where emails become sent messages.
+The final execution step. Take generated emails and prospect data, configure lemlist campaigns, launch sequences, and monitor performance. This is where emails become sent messages.
 
 ## Why This Matters
 
@@ -16,22 +16,23 @@ Brilliant emails sitting in a CSV don't book meetings. This skill bridges the ga
 1. **`company-context.md`**: For campaign naming, sender persona reference.
 2. **Generated emails**: Output from `/email-generation` (markdown files + CSV export).
 3. **Tiered prospect list**: Output from `/tiering-segmentation` with tier assignments and outreach strategies.
-4. **Domain infrastructure**: Sending domains configured and warmed. See `/domain-infrastructure-setup` and `/domain-warmup-orchestrator` if not ready.
+4. **Domain infrastructure**: Sending domains configured and warmed via **lemwarm** (lemlist's built-in warmup product). See the **domain-infrastructure-setup** and **domain-warmup-orchestrator** commands if not ready — lemwarm should be running at least ~2 weeks before real sends begin.
+5. **lemlist workspace**: A lemlist account with connected sender mailboxes and an API key available as `LEMLIST_API_KEY`.
 
 If emails haven't been generated yet, tell the user to run `/email-generation` first. If domains aren't warmed, flag this as a blocker.
 
 ## Step 1: Pre-Launch Checklist
 
-Before touching Instantly, validate readiness:
+Before touching lemlist, validate readiness:
 
 ```markdown
 ### Pre-Launch Checklist: [Campaign Name]
 
 #### Infrastructure
 - [ ] Sending domains configured (SPF, DKIM, DMARC passing)
-- [ ] Domains warmed to target volume (minimum 2 weeks warm-up)
-- [ ] Mailboxes connected to Instantly
-- [ ] Custom tracking domain set up (not Instantly default)
+- [ ] Domains warmed via lemwarm to target volume (minimum 2 weeks warm-up)
+- [ ] Mailboxes connected to lemlist
+- [ ] Custom tracking domain set up (not lemlist default)
 
 #### Data
 - [ ] Prospect list deduplicated against CRM and previous campaigns
@@ -59,13 +60,15 @@ Surface any failures immediately. Don't proceed with a failed checklist.
 
 ### Campaign Structure (Per Tier)
 
-Map each tier to a separate Instantly campaign:
+Map each tier to a separate lemlist campaign:
 
 | Tier | Campaign Name Pattern | Daily Volume | Sequence Steps | Sending Window |
 |------|----------------------|-------------|----------------|----------------|
 | Tier 1 | `[Segment]-T1-[Date]` | 10-25/day per mailbox | 5-7 | 8am-11am recipient TZ |
 | Tier 2 | `[Segment]-T2-[Date]` | 25-50/day per mailbox | 4-5 | 8am-12pm recipient TZ |
 | Tier 3 | `[Segment]-T3-[Date]` | 50-75/day per mailbox | 3-4 | 7am-1pm recipient TZ |
+
+Each tier's sending window is enforced by a lemlist **schedule** associated with that tier's campaign (see Step 3).
 
 ### Mailbox Rotation
 
@@ -116,71 +119,63 @@ Define delays between sequence steps:
 | 2 | Follow-up | 3 days | Different angle, same segment framing |
 | 3 | Break-up | 4 days | Final touch |
 
-## Step 3: Prepare Instantly Import
+## Step 3: Configure the lemlist Campaign
 
-### CSV Format
+lemlist's data model: a **campaign** holds a multi-step **sequence**; **leads** are enrolled into a campaign; a **schedule** defines the sending window and is associated with a campaign; connected **email accounts** (mailboxes) do the sending; **lemwarm** is lemlist's built-in warmup product for those mailboxes.
 
-Generate the import CSV with these columns:
+### Per-tier setup sequence
 
-```
-email,first_name,last_name,company_name,custom1,custom2,custom3,custom4,custom5
-```
+1. **Create or select the campaign** for this tier (lemlist's Create Campaign operation), named per the pattern in Step 2.
+2. **Build the multi-step sequence** inside the campaign, matching the tier's step count and delays from Step 2.
+3. **Create and associate a sending schedule** with the campaign so sends only happen inside the tier's recipient-timezone window.
+4. **Enroll the tiered leads into the campaign.** This is the Create-Lead-in-Campaign operation:
+   - `POST /api/campaigns/{CAMPAIGN_ID}/leads/`
+   - Body: `email` (required), plus optional `firstName`, `lastName`, `companyName`, `jobTitle`, `phone`, `linkedinUrl`, `timezone`
+   - Map the pipeline's personalization fields (subject/body per step, tier label) into the lead payload alongside these standard fields; consult the lemlist API reference for how custom/merge variables are attached per lead if the mapping isn't a 1:1 fit.
+5. **Start the campaign** (and, per-lead, **Launch Lead** for any leads added after the campaign is already running).
 
-Where custom fields map to:
-- `custom1`: Subject line for step 1
-- `custom2`: Body for step 1
-- `custom3`: Subject line for step 2 (if different thread)
-- `custom4`: Body for step 2
-- `custom5`: Tier label (for internal tracking)
+### Import via CSV (bulk fallback)
 
-### CSV Generation Script
+For large tiers, lemlist also supports CSV-based lead import through its dashboard, or bulk enrollment via repeated calls to the Create-Lead-in-Campaign endpoint. Generate the export CSV with columns matching the standard lead fields above plus the per-step subject/body content, then either import through the lemlist UI or script the API calls. Adapt the exact script to the pipeline's current column names.
 
-```python
-# Generate on-demand when user requests export
-# Input: emails markdown from /email-generation + tiered CSV from /tiering-segmentation
-# Output: Instantly-compatible CSV per tier
+### lemlist MCP server (no-code alternative)
 
-# Key operations:
-# 1. Parse generated emails (subject, body per prospect)
-# 2. Join with prospect data (email, name, company)
-# 3. Map personalization variables to Instantly merge fields
-# 4. Validate: no empty subjects, no empty bodies, valid emails
-# 5. Split by tier into separate CSVs
-# 6. UTF-8 encode, escape quotes, validate field lengths
+lemlist also ships an MCP server (OAuth-based, lemlist advertises "set up in 30 seconds") that connects lemlist directly to Claude and other AI assistants — a natural fit here since this is a Claude Code plugin. Where available, prefer driving campaign/lead operations through the MCP server's tools over hand-rolled API calls; fall back to the raw API (below) when the MCP server isn't connected.
+
+### API access
+
+lemlist's API base is `https://api.lemlist.com/api`, authenticated with HTTP Basic auth — empty username, API key as the password:
+
+```bash
+curl -u ":$LEMLIST_API_KEY" https://api.lemlist.com/api/campaigns
 ```
 
-Generate the actual script when the user is ready to export. Adapt to their specific column names and data structure.
+Provide your own key through the `LEMLIST_API_KEY` environment variable — never hardcode a key in this file or in campaign configs. lemlist enforces rate limits on the API; consult lemlist's Rate Limits guide and add backoff/throttling to any bulk import script rather than assuming an unbounded call rate.
 
-### Instantly API Integration
+Key operations this step uses (see lemlist's API reference for full request/response shapes):
+- **Campaigns**: Create, Update, Duplicate, Start Campaign, Pause Campaign, Get Campaign, Get Many Campaigns, Get Campaign Stats/Reports, Export Campaign Leads.
+- **Leads**: Create Lead in Campaign, Launch Lead, Pause Lead, Resume Paused Lead, Update Lead, Import Leads from CRM, Get Campaign Leads, Delete/Unsubscribe Lead, Mark Lead Interested/Not Interested.
+- **Schedules**: Create Schedule, Associate Schedule with Campaign, Get Campaign Schedules.
+- **Lemwarm**: Start Lemwarm, Pause Lemwarm, Get/Update Lemwarm Settings.
+- **Email Accounts**: Connect, Test, Disconnect.
+- **Unsubscribes, Webhooks** (Add/Delete/Get), **Team & Senders** (Get Team Credits, Get Team Senders).
 
-Instantly is driven via its public API. Provide your own key through the
-`INSTANTLY_API_KEY` environment variable — never hardcode a key in this file
-or in campaign configs. See Instantly's API docs for the campaign, lead, and
-account endpoints this step calls.
+### Manual Setup (Fallback)
 
-When connected, this step will:
-1. Create campaigns via API (`POST /api/v1/campaign/create`)
-2. Upload leads per campaign (`POST /api/v1/lead/add`)
-3. Configure sequence steps and timing
-4. Set sending schedules and limits
-5. Activate campaigns
+Without API or MCP integration, provide step-by-step lemlist UI instructions:
 
-### Manual Upload (Fallback)
-
-Without API integration, provide step-by-step Instantly UI instructions:
-
-1. **Create Campaign**: Instantly dashboard > Campaigns > New Campaign
+1. **Create Campaign**: lemlist dashboard > Campaigns > New Campaign
    - Name: `[Segment]-T[tier]-[Date]`
    - Assign sending accounts from the mailbox rotation plan
-2. **Upload Leads**: Import the tier-specific CSV
-   - Map columns: email, first_name, last_name, company_name
-   - Map custom variables to sequence step content
-3. **Configure Sequence**: Add steps matching the tier's sequence timing
-   - Paste email templates with `{{custom1}}` merge fields
+2. **Build the Sequence**: Add steps matching the tier's sequence timing
+   - Paste email templates with the tier's merge/personalization variables
    - Set delays between steps
-4. **Set Schedule**: Configure sending window per the tier specification
+3. **Create and Attach a Schedule**: Configure the sending window per the tier specification and associate it with the campaign
+4. **Upload Leads**: Import the tier-specific CSV, or add leads one by one
+   - Map columns: email, firstName, lastName, companyName
+   - Map custom variables to sequence step content
 5. **Set Limits**: Daily sending limit per account per the mailbox assignment
-6. **Review & Launch**: Preview 5 random leads, verify merge fields render correctly
+6. **Review & Launch**: Preview a handful of leads, verify merge fields render correctly, then Start Campaign
 
 ## Step 4: Launch Protocol
 
@@ -203,13 +198,13 @@ Start at 25% of target volume:
 
 #### Day 2-3 Monitoring
 - [ ] Open rate > 40% (if tracking enabled)
-- [ ] No deliverability warnings from Instantly
+- [ ] No deliverability warnings from lemlist
 - [ ] Replies coming to correct inbox
 - [ ] Auto-replies handled correctly (not counting as engagement)
 
 #### Go/No-Go Decision
 - **GO**: All checks pass -> ramp to 50%, then 100% over next 3 days
-- **NO-GO**: Any check fails -> pause, diagnose, fix before resuming
+- **NO-GO**: Any check fails -> pause the campaign (Pause Campaign), diagnose, fix before resuming
 ```
 
 ### Full Launch (Day 4+)
@@ -223,6 +218,8 @@ Ramp to full volume:
 | 6+ | 100% | Full volume, shift to weekly monitoring |
 
 ## Step 5: Ongoing Monitoring
+
+Pull volume, deliverability, and engagement numbers via lemlist's Get Campaign Stats/Reports operation (or the MCP server's equivalent tool).
 
 ### Daily Health Check (First 2 Weeks)
 
@@ -284,16 +281,16 @@ Ramp to full volume:
 
 ### Alert Triggers
 
-Pause and investigate immediately if:
+Pause (Pause Campaign / Pause Lead) and investigate immediately if:
 - Bounce rate exceeds 5% on any domain
 - Spam complaint received
 - Open rate drops below 20% (possible deliverability issue)
-- Instantly flags domain health warning
+- lemlist/lemwarm flags a domain health warning
 - Reply rate on Tier 1 is below Tier 3 (something is wrong with personalization)
 
 ## Step 6: Campaign Results Export
 
-When a campaign completes or hits a review milestone:
+When a campaign completes or hits a review milestone, pull final numbers via Export Campaign Leads / Get Campaign Stats and assemble:
 
 ### Results Package
 

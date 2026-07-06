@@ -1,6 +1,6 @@
 ---
 name: company-context-builder
-description: Build and maintain a living company context file that captures everything about a company's product, customers, ICP, lingo, win cases, and campaign history. Use this skill whenever the user mentions company context, ICP definition, building context, updating context, capturing call recordings, onboarding a new client, starting a new campaign, reviewing past campaign results, or feeding Instantly results back into the system. Also triggers on "what do we know about [company]", "update context from calls", "add win case", or any mention of maintaining institutional memory across campaigns.
+description: Build and maintain a living company context file that captures everything about a company's product, customers, ICP, lingo, win cases, and campaign history. Use this skill whenever the user mentions company context, ICP definition, building context, updating context, capturing call recordings, onboarding a new client, starting a new campaign, reviewing past campaign results, or feeding lemlist results back into the system. Also triggers on "what do we know about [company]", "update context from calls", "add win case", or any mention of maintaining institutional memory across campaigns.
 ---
 
 # Company Context Builder
@@ -77,7 +77,7 @@ Summarize findings and integrate them into the context file. Always cite which c
 
 When the user says "update context with campaign results" or similar:
 
-1. Ask for the campaign data (Instantly export, reply rates, positive/negative replies)
+1. Ask for the campaign data (lemlist export, reply rates, positive/negative replies)
 2. Extract:
    - **What messaging worked**: Which subject lines, angles, CTAs got replies
    - **What didn't work**: Low open rates, negative replies, unsubscribes

@@ -31,16 +31,16 @@ Each skill consumes the previous step's output:
 6. **tiering-segmentation** — score and tier into outreach strategies
 7. **email-generation** — instruction-following email assembly from datapoints
 8. **copy-feedback** — multi-layer prospect-psychology review before send
-9. **run-instantly** — configure, launch, and monitor campaigns in Instantly
+9. **run-lemlist** — configure, launch, and monitor campaigns in lemlist
 
-**Infrastructure commands:** `/domain-infrastructure-setup` and
-`/domain-warmup-orchestrator` stand up and warm secondary sending domains before
-step 9.
+**Infrastructure commands:** the **domain-infrastructure-setup** and
+**domain-warmup-orchestrator** commands stand up and warm secondary sending domains
+before step 9.
 
 ## Prerequisites
 
-- An [Instantly](https://instantly.ai) account for sending.
-- Your own API keys, supplied via environment variables (e.g. `INSTANTLY_API_KEY`).
+- A [lemlist](https://lemlist.com) account (with lemwarm) for sending.
+- Your own API keys, supplied via environment variables (e.g. `LEMLIST_API_KEY`).
   No keys ship in this repo; none are stored in any skill file.
 - Secondary sending domains (the two infrastructure commands help you set these up).
 

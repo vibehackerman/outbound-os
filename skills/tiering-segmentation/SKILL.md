@@ -213,7 +213,7 @@ After scoring, check the distribution makes sense:
 - **Channels**: Email only
 - **Sequence length**: 3-4 touches over 10 days
 - **Follow-up**: Automated replies, escalate positive signals to Tier 2 treatment
-- **Owner**: Automated via Instantly
+- **Owner**: Automated via lemlist
 
 ### DQ: Removal or Parking
 - Remove from active campaign
@@ -247,7 +247,7 @@ Combined file with all tiers: `tiered-[segment]-[date].csv` with columns:
 ## Step 6: Downstream Handoffs
 
 - **To `/email-generation`**: Pass tier-specific CSVs. Email generation adapts framework and personalization depth based on tier.
-- **To `/run-instantly`**: Tier determines campaign assignment, sending volume, and sequence configuration.
+- **To `/run-lemlist`**: Tier determines campaign assignment, sending volume, and sequence configuration.
 - **To `/list-building` (refinement)**: DQ patterns and tier distribution anomalies feed back into list hypothesis refinement.
 
 ## Important Behaviors

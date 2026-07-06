@@ -161,27 +161,29 @@ Before presenting the batch, run these checks:
 4. **Banned phrase scan**: Automated check for all banned phrases. Flag violations.
 5. **CTA variety**: If more than 30% of emails use the same CTA phrasing, flag for diversification.
 
-## Step 6: Export for Instantly
+## Step 6: Export for lemlist
 
-Instantly is driven via its public API. Provide your own key through the
-`INSTANTLY_API_KEY` environment variable — never hardcode a key in this file
-or in campaign configs. See Instantly's API docs for the campaign, lead, and
-account endpoints this step calls.
+lemlist is driven via its public API (`https://api.lemlist.com/api`, HTTP
+Basic auth with an empty username and the API key as password). Provide your
+own key through the `LEMLIST_API_KEY` environment variable — never hardcode a
+key in this file or in campaign configs. See lemlist's API docs for the
+campaign, lead, and account endpoints this step calls (the `/run-lemlist`
+skill drives the actual calls).
 
-When the Instantly integration is connected, this step will:
-1. Format emails into Instantly's import schema (lead email, subject, body, sequence step)
+When the lemlist integration is connected, this step will:
+1. Format emails into lemlist's lead schema (lead email plus per-step subject/body content)
 2. Map to the correct campaign based on segment/tier
-3. Validate against Instantly's sending limits
-4. Upload via API
+3. Validate against lemlist's sending limits and rate limits
+4. Upload via the Create-Lead-in-Campaign API (or the lemlist MCP server)
 
-For now, output a CSV with columns: `email`, `first_name`, `last_name`, `company`, `subject`, `body`, `sequence_step` that can be manually imported into Instantly.
+For now, output a CSV with columns: `email`, `first_name`, `last_name`, `company`, `subject`, `body`, `sequence_step` that can be manually imported into lemlist.
 
 ### CSV Generation Script
 
 When generating the CSV export, use Python:
 ```python
-# Script location: scripts/export_to_instantly.py
-# Takes the generated emails markdown and converts to Instantly-compatible CSV
+# Script location: scripts/export_to_lemlist.py
+# Takes the generated emails markdown and converts to lemlist-compatible CSV
 # Handles: UTF-8 encoding, quote escaping, field validation
 ```
 

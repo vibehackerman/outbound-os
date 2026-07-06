@@ -6,7 +6,7 @@ description: Set up and configure secondary sending domains (SPF/DKIM/DMARC) for
 # Domain Infrastructure Setup
 
 ## Purpose
-Set up secondary domains for cold outreach so that deliverability is protected, primary domain reputation is never at risk, and Instantly sequences can begin warm-up on day one.
+Set up secondary domains for cold outreach so that deliverability is protected, primary domain reputation is never at risk, and lemlist sequences can begin warm-up (via lemwarm) on day one.
 
 **Goal:** All secondary domains pass MXToolbox validation with zero errors before warm-up starts. Primary domain is never used for cold outreach.
 
@@ -18,7 +18,7 @@ Set up secondary domains for cold outreach so that deliverability is protected, 
 - `primary_domain`: your company's main domain (e.g. example.com)
 - `sending_volume_target`: Estimated monthly outreach emails
 - `team_senders`: Number of team members sending (each needs their own inbox)
-- `instantly_workspace`: Confirmed (Instantly is the sending tool)
+- `lemlist_workspace`: Confirmed (lemlist is the sending tool)
 
 ---
 
@@ -118,11 +118,11 @@ TTL: 3600
 - Move to `p=quarantine` after confirming no legitimate email is being flagged
 - Never use `p=reject` until 60+ days of clean DMARC reports
 
-### Custom Tracking Domain (for Instantly)
+### Custom Tracking Domain (for lemlist)
 ```
 Type: CNAME
 Host: track (or em, or click)
-Value: [provided by Instantly in account settings]
+Value: [provided by lemlist in account settings]
 TTL: 3600
 ```
 
@@ -141,7 +141,7 @@ Examples:
 **Rules:**
 - Use real first names only — never info@, hello@, team@
 - Each inbox needs a profile photo, full name, and email signature set up before warm-up
-- Signature must include: name, title (e.g. "Founder, Your Company"), website link, no unsubscribe link (handled by Instantly)
+- Signature must include: name, title (e.g. "Founder, Your Company"), website link, no unsubscribe link (handled by lemlist)
 
 ---
 

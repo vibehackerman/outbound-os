@@ -8,9 +8,9 @@ description: Warm up secondary sending domains to full sending capacity with hea
 ## Purpose
 Ensure secondary sending domains reach full sending capacity with inbox placement rates >90% before any real prospect receives an email. A failed warm-up means cold emails land in spam — making the entire outreach investment worthless.
 
-**Goal:** All inboxes achieve >90% inbox placement on mail-tester.com and Instantly's warm-up score >80 before live campaign launch.
+**Goal:** All inboxes achieve >90% inbox placement on mail-tester.com and lemwarm's warm-up score >80 before live campaign launch.
 
-**Does not:** Write email copy (Skill 5), configure DNS records (Skill 3), or manage Instantly sequences directly.
+**Does not:** Write email copy (Skill 5), configure DNS records (Skill 3), or manage lemlist sequences directly.
 
 ---
 
@@ -18,7 +18,7 @@ Ensure secondary sending domains reach full sending capacity with inbox placemen
 - `domains`: List of secondary domains with inbox addresses
 - `start_date`: When warm-up begins
 - `target_daily_volume`: Final target emails/day per inbox
-- `instantly_warmup_enabled`: Confirmed true/false
+- `lemwarm_enabled`: Confirmed true/false
 - `campaign_launch_date`: Target date for first real outreach
 
 ---
@@ -27,7 +27,7 @@ Ensure secondary sending domains reach full sending capacity with inbox placemen
 
 1. **Never rush warm-up.** 4 weeks minimum per inbox. 6 weeks preferred.
 2. **Gradually increase volume.** Never jump more than 20% day-over-day.
-3. **Maintain high engagement.** Instantly's warm-up network handles this — ensure it is enabled.
+3. **Maintain high engagement.** lemwarm's warm-up network handles this — ensure it is enabled.
 4. **Monitor daily.** A single spam spike can undo two weeks of progress.
 5. **Never mix warm-up and live outreach.** Wait until warm-up is complete.
 6. **One domain failure does not stop others.** Isolate issues per domain.
@@ -42,7 +42,7 @@ For each inbox, generate a day-by-day sending ramp:
 
 | Week | Daily Sends | Warm-up Emails | Notes |
 |---|---|---|---|
-| Week 1 | 5 | 5 (all warm-up) | Instantly warm-up only, zero live sends |
+| Week 1 | 5 | 5 (all warm-up) | lemwarm only, zero live sends |
 | Week 2 | 10 | 10 | Still warm-up only |
 | Week 3 | 20 | 20 | Begin monitoring spam scores |
 | Week 4 | 30 | 25 warm-up + 5 live | First live emails if score >80 |
@@ -62,12 +62,12 @@ Flag if campaign launch date is < 4 weeks from domain setup — this is a risk t
 
 ---
 
-## Step 2 — Instantly Configuration Settings
+## Step 2 — lemlist Configuration Settings
 
-Provide exact settings to enter in Instantly per inbox:
+Provide exact settings to enter in lemlist per inbox:
 
 ```
-INSTANTLY INBOX SETTINGS
+LEMLIST INBOX SETTINGS
 Sending limit: [per schedule above]
 Minimum time between emails: 4 minutes
 Maximum time between emails: 9 minutes
@@ -89,10 +89,10 @@ Every Monday, run these checks and output a health report:
 
 | Metric | Tool | Green | Yellow | Red |
 |---|---|---|---|---|
-| Inbox placement rate | Instantly warm-up score | >80 | 60–80 | <60 |
+| Inbox placement rate | lemwarm score | >80 | 60–80 | <60 |
 | Spam score | Mail-tester.com | ≥9/10 | 7–9 | <7 |
-| Bounce rate | Instantly analytics | <2% | 2–5% | >5% |
-| Spam complaint rate | Instantly analytics | <0.1% | 0.1–0.3% | >0.3% |
+| Bounce rate | lemlist analytics | <2% | 2–5% | >5% |
+| Spam complaint rate | lemlist analytics | <0.1% | 0.1–0.3% | >0.3% |
 | DMARC reports | Google Postmaster / rua inbox | 0 failures | <5 failures | >5 failures |
 | Blacklist status | MXToolbox | 0 lists | — | Any listing |
 
@@ -133,7 +133,7 @@ Campaign target start: [date]
 INBOX: alex@tryexample.eu
 Warm-up duration: 6 weeks
 Current daily volume: 50
-Instantly warm-up score: 84 ✓
+lemwarm score: 84 ✓
 Mail-tester score: 9.5/10 ✓
 Bounce rate (last 7 days): 0.8% ✓
 Spam complaint rate: 0.0% ✓
@@ -156,5 +156,5 @@ OVERALL CAMPAIGN STATUS: HOLD — 1 inbox not ready. Launch with tryexample.eu o
 - If >3 inboxes are ready but 1 is not → launch with ready inboxes, note reduced capacity
 - If bounce rate spikes after switching from warm-up to live → immediately verify list quality, not domain setup
 - Never increase daily volume two weeks in a row without a health check in between
-- If Instantly warm-up score drops week-over-week for 2 consecutive weeks → pause and diagnose before continuing
-- Warm-up emails must be realistic business-context content — Instantly's network handles this automatically
+- If lemwarm score drops week-over-week for 2 consecutive weeks → pause and diagnose before continuing
+- Warm-up emails must be realistic business-context content — lemwarm's network handles this automatically
